@@ -70,7 +70,7 @@ export const criarDivida = (divida: Divida) => {
   const vencimentos = calcularVencimentos(divida.data_compra, divida.numero_parcelas, cartao.fechamento, cartao.vencimento)
 
   const insertParcela = db.prepare(`
-    INSERT INTO parcelas (numero_parcelas, valor_parcela, data_vencimento, situacao, divida_id, criado_em, atualizado_em)
+    INSERT INTO parcelas (numero, valor, data_vencimento, situacao, divida_id, criado_em, atualizado_em)
     VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
   `)
 

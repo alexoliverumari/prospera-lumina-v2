@@ -3,7 +3,8 @@ import { Dialog } from '@headlessui/react'
 import { X } from 'lucide-react'
 import { toast } from 'sonner'
 import { criarDivida, atualizarDivida } from '../services/api'
-import { Divida, Cartao } from '../types'
+import { Cartao } from '../types/Cartao'
+import { Divida } from '../types/Divida'
 
 interface Props {
   isOpen: boolean
@@ -58,7 +59,7 @@ export default function DividaModal({ isOpen, onClose, onSave, dividaEditando, c
       }
 
       if (dividaEditando) {
-        await atualizarDivida(payload.atualizado_em, payload)
+        await atualizarDivida(payload.id, payload)
         toast.success('Dívida atualizada com sucesso!')
       } else {
         await criarDivida(payload)

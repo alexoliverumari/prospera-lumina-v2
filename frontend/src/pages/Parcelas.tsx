@@ -6,8 +6,8 @@ import { toast } from 'sonner'
 
 interface Parcela {
   id: number
-  numero_parcelas: number
-  valor_parcela: number
+  numero: number
+  valor: number
   data_vencimento: string
   situacao: string
 }
@@ -29,8 +29,8 @@ const Parcelas = () => {
         {parcelas.map(parcela => (
           <div key={parcela.id} className="bg-white rounded-lg shadow p-4 flex justify-between items-center">
             <div>
-              <p className="font-semibold">Parcela {parcela.numero_parcelas}</p>
-              <p>Valor: R$ {parcela.valor_parcela.toFixed(2)}</p>
+              <p className="font-semibold">Parcela {parcela.numero}</p>
+              <p>Valor: R$ {parcela.valor.toFixed(2)}</p>
               <p>Vencimento: {parcela.data_vencimento}</p>
               <p>Situação: {parcela.situacao}</p>
             </div>

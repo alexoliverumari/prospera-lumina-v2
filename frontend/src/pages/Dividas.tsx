@@ -25,7 +25,7 @@ export default function Dividas() {
     numero_parcelas: 1,
     data_compra: "",
     situacao: "pendente",
-    cartao_id: 1,
+    cartao_id: 0,
   });
   const [modalAberto, setModalAberto] = useState(false);
   const [dividaEditando, setDividaEditando] = useState<Divida | null>(null);
@@ -80,14 +80,12 @@ export default function Dividas() {
       <h1 className="text-2xl font-bold mb-4">Dívidas</h1>
       <label htmlFor="card">Selecione um cartão: </label>
       <select
+        value={novaDivida.cartao_id}
+        onChange={(e) => setNovaDivida({ ...novaDivida, cartao_id: Number(e.target.value) })}
         id="card"
-        value={selectedCardId}
-        onChange={handleCardChange}
         required
       >
-        <option value="" disabled>
-          Escolha um cartão
-        </option>
+        <option value="">Selecione um cartão</option>
         {cards.map((card) => (
           <option key={card.id} value={card.id}>
             {card.nome}
@@ -95,7 +93,7 @@ export default function Dividas() {
         ))}
       </select>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <input className="input" placeholder="Cartão" value={selectedCardId} readOnly onChange={(e) => setNovaDivida({ ...novaDivida, cartao_id: Number(e.target.value)})}/>
+        {/* <input className="input" placeholder="Cartão" value={selectedCardId} readOnly onChange={(e) => setNovaDivida({ ...novaDivida, cartao_id: Number(e.target.value)})}/> */}
         <input className="input" placeholder="Descrição" value={novaDivida.descricao} onChange={(e) => setNovaDivida({ ...novaDivida, descricao: e.target.value })} />
         <input className="input" placeholder="Categoria" value={novaDivida.categoria} onChange={(e) => setNovaDivida({ ...novaDivida, categoria: e.target.value })} />
         <input className="input" type="number" placeholder="Valor Total" value={novaDivida.valor_total} onChange={(e) => setNovaDivida({ ...novaDivida, valor_total: parseFloat(e.target.value) })} />

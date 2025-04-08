@@ -1,39 +1,26 @@
 import { addMonths, setDate, isAfter, parseISO } from 'date-fns'
 
-export function calcularVencimentos(dataCompraStr: string, qtdParcelas: number, diaFechamento: number, diaVencimento: number): string[] {
+export function calcularVencimentos(
+  dataCompraStr: string,
+  qtdParcelas: number,
+  diaFechamento: number,
+  diaVencimento: number
+): string[] {
   const dataCompra = parseISO(dataCompraStr)
   const vencimentos: string[] = []
 
+  // Define o primeiro mês de vencimento
+  const dataFechamento = setDate(new Date(dataCompra), diaFechamento)
+
+  let mesBase = isAfter(dataCompra, dataFechamento)
+    ? addMonths(dataCompra, 1)
+    : dataCompra
+
+  // Parcela 1 → mesBase, Parcela 2 → mesBase+1, etc.
   for (let i = 0; i < qtdParcelas; i++) {
-    let dataReferencia = addMonths(dataCompra, i)
-
-    const dataFechamento = setDate(dataReferencia, diaFechamento)
-    const dataVencimento = setDate(addMonths(dataReferencia, isAfter(dataCompra, dataFechamento) ? 1 : 0), diaVencimento)
-
-    vencimentos.push(dataVencimento.toISOString().split('T')[0])
+    const vencimento = setDate(addMonths(mesBase, i), diaVencimento)
+    vencimentos.push(vencimento.toISOString().split('T')[0])
   }
 
   return vencimentos
 }
-// import { addMonths, getDate, setDate, isAfter, isBefore } from 'date-fns';
-
-// export function calcularVencimentos(
-//   dataCompra: string,
-//   diaFechamento: number,
-//   diaVencimento: number
-// ): Date {
-//   const fechamento = setDate(new Date(dataCompra), diaFechamento);
-//   const vencimentoBase = setDate(new Date(dataCompra), diaVencimento);
-
-//   let dataVencimento: Date;
-
-//   if (isBefore(dataCompra, fechamento) || getDate(dataCompra) === diaFechamento) {
-//     // Compra antes ou no dia do fechamento → próxima fatura
-//     dataVencimento = addMonths(vencimentoBase, 1);
-//   } else {
-//     // Compra após fechamento → fatura do mês seguinte
-//     dataVencimento = addMonths(vencimentoBase, 2);
-//   }
-
-//   return dataVencimento;
-// }

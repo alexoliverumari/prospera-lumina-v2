@@ -5,6 +5,8 @@ import { toast } from 'sonner'
 import { criarDivida, atualizarDivida } from '../services/api'
 import { Cartao } from '../types/Cartao'
 import { Divida } from '../types/Divida'
+import { fetchCards } from '../services/api'
+
 
 interface Props {
   isOpen: boolean
@@ -74,6 +76,21 @@ export default function DividaModal({ isOpen, onClose, onSave, dividaEditando, c
     }
   }
 
+  const [cards, setCards] = useState<{ id: number; name: string }[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | ''>('');
+
+  useEffect(() => {
+    const loadCards = async () => {
+      const fetchedCards = await fetchCards();
+      setCards(fetchedCards);
+    };
+    loadCards();
+  }, []);
+
+  const handleCardChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCardId(Number(event.target.value));
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
@@ -87,6 +104,21 @@ export default function DividaModal({ isOpen, onClose, onSave, dividaEditando, c
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <select
+              id="card"
+              value={selectedCardId}
+              onChange={handleCardChange}
+              required
+            >
+              <option value="" disabled>
+                Escolha um cartão
+              </option>
+              {cards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {card.name}
+                </option>
+              ))}
+            </select>
             <input type="text" placeholder="Descrição" className="input" value={descricao} onChange={e => setDescricao(e.target.value)} />
             <input type="text" placeholder="Categoria" className="input" value={categoria} onChange={e => setCategoria(e.target.value)} />
             <input type="number" placeholder="Valor Total" className="input" value={valorTotal} onChange={e => setValorTotal(+e.target.value)} />

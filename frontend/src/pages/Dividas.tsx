@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getDividas, criarDivida, atualizarDivida, deleteDivida } from "../services/api";
-import { toast } from 'sonner'  
+import { toast } from 'sonner'
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import ModalEditarDivida from "../components/ModalEditarDivida";
+import { fetchCards } from "../services/api";
 
 interface Divida {
   id: number;
@@ -58,11 +59,43 @@ export default function Dividas() {
     carregarDividas();
   };
 
+
+  const [cards, setCards] = useState<{ id: number; nome: string }[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | ''>('');
+
+  useEffect(() => {
+    const loadCards = async () => {
+      const fetchedCards = await fetchCards();
+      setCards(fetchedCards);
+    };
+    loadCards();
+  }, []);
+
+  const handleCardChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCardId(Number(event.target.value));
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Dívidas</h1>
-
+      <label htmlFor="card">Selecione um cartão: </label>
+      <select
+        id="card"
+        value={selectedCardId}
+        onChange={handleCardChange}
+        required
+      >
+        <option value="" disabled>
+          Escolha um cartão
+        </option>
+        {cards.map((card) => (
+          <option key={card.id} value={card.id}>
+            {card.nome}
+          </option>
+        ))}
+      </select>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <input className="input" placeholder="Cartão" value={selectedCardId} readOnly onChange={(e) => setNovaDivida({ ...novaDivida, cartao_id: Number(e.target.value)})}/>
         <input className="input" placeholder="Descrição" value={novaDivida.descricao} onChange={(e) => setNovaDivida({ ...novaDivida, descricao: e.target.value })} />
         <input className="input" placeholder="Categoria" value={novaDivida.categoria} onChange={(e) => setNovaDivida({ ...novaDivida, categoria: e.target.value })} />
         <input className="input" type="number" placeholder="Valor Total" value={novaDivida.valor_total} onChange={(e) => setNovaDivida({ ...novaDivida, valor_total: parseFloat(e.target.value) })} />
@@ -77,11 +110,15 @@ export default function Dividas() {
             <div>
               <p className="font-semibold">{divida.descricao}</p>
               <p className="text-sm text-gray-500">R$ {divida.valor_total.toFixed(2)} - {divida.categoria}</p>
+              <p className="text-sm text-gray-500">Parcelas: {divida.numero_parcelas} - Situação: {divida.situacao}</p>
+              <p className="text-sm text-gray-500">Data da Compra: {new Date(divida.data_compra).toLocaleDateString()}</p>
+              <p className="text-sm text-gray-500">Cartão: {cards.find(card => card.id === divida.cartao_id)?.nome}</p>
+              
             </div>
             <div className="flex gap-2">
               <button onClick={() => { setDividaEditando(divida); setModalAberto(true); }} className="text-blue-600 hover:text-blue-800"><Pencil size={18} /></button>
               <button onClick={() => handleExcluir(divida.id)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
-              <button onClick={() => window.location.href = `/parcelas/${divida.id}`}className="text-blue-600 hover:underline mt-2">Ver Parcelas</button>
+              <button onClick={() => window.location.href = `/parcelas/${divida.id}`} className="text-blue-600 hover:underline mt-2">Ver Parcelas</button>
             </div>
           </li>
         ))}
